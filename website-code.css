@@ -1,6 +1,6 @@
 * {
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
+    font-family: system-ui, sans-serif;
 }
 
 body {
@@ -10,7 +10,7 @@ body {
 }
 
 .container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 40px auto;
     padding: 20px;
 }
@@ -27,13 +27,13 @@ form {
 
 input {
     flex: 1;
-    padding: 10px;
+    padding: 12px;
     border-radius: 6px;
     border: none;
 }
 
 button {
-    padding: 10px 16px;
+    padding: 12px 18px;
     border: none;
     border-radius: 6px;
     background: #238636;
@@ -52,13 +52,13 @@ button:hover {
 }
 
 .profile-card img {
-    width: 120px;
+    width: 140px;
     border-radius: 50%;
 }
 
 .repo {
-    padding: 12px;
     border: 1px solid #30363d;
     border-radius: 6px;
+    padding: 12px;
     margin-bottom: 10px;
 }
