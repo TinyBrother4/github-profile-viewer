@@ -1,62 +1,64 @@
 const form = document.getElementById("search-form");
 const input = document.getElementById("username-input");
-const profileSection = document.getElementById("profile");
-const reposSection = document.getElementById("repos");
+const profile = document.getElementById("profile");
+const repos = document.getElementById("repos");
 
-const GITHUB_API = "https://api.github.com/users/";
+const API = "https://api.github.com/users/";
 
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const username = input.value.trim();
-    if (!username) return;
 
-    profileSection.innerHTML = "";
-    reposSection.innerHTML = "";
+    profile.innerHTML = "Loading...";
+    repos.innerHTML = "";
 
     try {
-        const user = await fetchUser(username);
+        const user = await fetchJSON(API + username);
         renderProfile(user);
 
-        const repos = await fetchRepos(username);
-        renderRepos(repos);
-    } catch (error) {
-        profileSection.innerHTML = `<p>User not found.</p>`;
+        const repoData = await fetchJSON(API + username + "/repos?sort=updated");
+        renderRepos(repoData);
+    } catch {
+        profile.innerHTML = "<p>User not found.</p>";
     }
 });
 
-async function fetchUser(username) {
-    const response = await fetch(`${GITHUB_API}${username}`);
-    if (!response.ok) throw new Error("User not found");
-    return response.json();
-}
-
-async function fetchRepos(username) {
-    const response = await fetch(`${GITHUB_API}${username}/repos`);
-    return response.json();
+async function fetchJSON(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error();
+    return res.json();
 }
 
 function renderProfile(user) {
-    profileSection.innerHTML = `
+    profile.innerHTML = `
         <div class="profile-card">
-            <img src="${user.avatar_url}" alt="${user.login}" />
+            <img src="${user.avatar_url}" />
             <div>
                 <h2>${user.name || user.login}</h2>
-                <p>${user.bio || ""}</p>
-                <p>Followers: ${user.followers} | Following: ${user.following}</p>
+                <p>${user.bio || "No bio"}</p>
+                <p>
+                    ⭐ ${user.public_repos} Repos · 
+                    👥 ${user.followers} Followers · 
+                    👤 ${user.following} Following
+                </p>
+                <a href="${user.html_url}" target="_blank">View on GitHub</a>
             </div>
         </div>
     `;
 }
 
-function renderRepos(repos) {
-    reposSection.innerHTML = "<h2>Repositories</h2>";
-    repos.forEach((repo) => {
-        const div = document.createElement("div");
-        div.className = "repo";
-        div.innerHTML = `
-            <a href="${repo.html_url}" target="_blank">${repo.name}</a>
-            <p>${repo.description || ""}</p>
+function renderRepos(repoList) {
+    repos.innerHTML = "<h2>Repositories</h2>";
+
+    repoList.slice(0, 10).forEach(repo => {
+        repos.innerHTML += `
+            <div class="repo">
+                <a href="${repo.html_url}" target="_blank">
+                    <strong>${repo.name}</strong>
+                </a>
+                <p>${repo.description || "No description"}</p>
+                <small>⭐ ${repo.stargazers_count}</small>
+            </div>
         `;
-        reposSection.appendChild(div);
     });
 }
